@@ -1,0 +1,68 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+
+            - id: auth-service
+              uri: http://localhost:8081
+              predicates:
+                - Path=/auth/**
+
+            - id: clientes-api
+              uri: http://localhost:8082
+              predicates:
+                - Path=/clientes/**
+
+            - id: cotizacion-api
+              uri: http://localhost:8083
+              predicates:
+                - Path=/cotizaciones/**
+
+            - id: activity-api
+              uri: http://localhost:8084
+              predicates:
+                - Path=/actividades/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:4200"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+
+
+jwt:
+  secret: 6f2c9a1d8b7e4c3f9a0d1e2c3b4a5f6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-discovery-server:8761/eureka/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: gateway,health,info
+  endpoint:
+    gateway:
+      enabled: true
+
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
+    org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: DEBUG

@@ -1,0 +1,26 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: auth-service
+
+  datasource:
+    url: jdbc:mysql://localhost:3310/auth_db
+    username: user
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+jwt:
+  secret: 6f2c9a1d8b7e4c3f9a0d1e2c3b4a5f6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b
+  expiration: 7200000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-discovery-server:8761/eureka/
