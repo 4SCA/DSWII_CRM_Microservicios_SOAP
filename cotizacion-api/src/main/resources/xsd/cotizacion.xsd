@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://cotizacionapi.example.com/"
+        xmlns:tns="http://cotizacionapi.example.com/"
+        elementFormDefault="qualified">
+
+    <xs:complexType name="Cotizacion">
+        <xs:sequence>
+            <xs:element name="id"
+                        type="xs:long"
+                        minOccurs="0"/>
+
+            <xs:element name="fecha"
+                        type="xs:string"
+                        minOccurs="0"/>
+
+            <xs:element name="idCliente"
+                        type="xs:long"
+                        minOccurs="0"/>
+
+            <xs:element name="idUsuario"
+                        type="xs:long"
+                        minOccurs="0"/>
+
+            <xs:element name="descripcion"
+                        type="xs:string"
+                        minOccurs="0"/>
+
+            <xs:element name="montoEstimado"
+                        type="xs:double"/>
+
+            <xs:element name="estado"
+                        type="xs:string"
+                        minOccurs="0"/>
+
+            <xs:element name="observaciones"
+                        type="xs:string"
+                        minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="cotizacion"
+                type="tns:Cotizacion"/>
+
+</xs:schema>

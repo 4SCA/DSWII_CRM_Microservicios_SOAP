@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://activityapi.example.com/"
+        xmlns:tns="http://activityapi.example.com/"
+        elementFormDefault="qualified">
+
+    <xs:simpleType name="TipoLlamada">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="ENTRANTE"/>
+            <xs:enumeration value="SALIENTE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="EstadoLlamada">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="PENDIENTE"/>
+            <xs:enumeration value="EN_CURSO"/>
+            <xs:enumeration value="FINALIZADA"/>
+            <xs:enumeration value="CANCELADA"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="ResultadoLlamada">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="ATENDIDA"/>
+            <xs:enumeration value="NO_CONTESTADA"/>
+            <xs:enumeration value="OCUPADO"/>
+            <xs:enumeration value="NUMERO_EQUIVOCADO"/>
+            <xs:enumeration value="RECHAZADA"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="Llamada">
+        <xs:sequence>
+            <xs:element name="id" type="xs:long" minOccurs="0"/>
+            <xs:element name="tipoLlamada"
+                        type="tns:TipoLlamada"/>
+            <xs:element name="observaciones"
+                        type="xs:string" minOccurs="0"/>
+            <xs:element name="fechaInicio"
+                        type="xs:dateTime"/>
+            <xs:element name="fechaFin"
+                        type="xs:dateTime" minOccurs="0"/>
+            <xs:element name="idUsuario" type="xs:long"/>
+            <xs:element name="idCliente" type="xs:long"/>
+            <xs:element name="numeroTelefono"
+                        type="xs:string" minOccurs="0"/>
+            <xs:element name="estado"
+                        type="tns:EstadoLlamada"/>
+            <xs:element name="resultado"
+                        type="tns:ResultadoLlamada"
+                        minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="llamada" type="tns:Llamada"/>
+
+</xs:schema>

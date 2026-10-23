@@ -10,7 +10,6 @@ spring:
       server:
         webflux:
           routes:
-
             - id: auth-service
               uri: http://localhost:8081
               predicates:
@@ -26,24 +25,35 @@ spring:
               predicates:
                 - Path=/cotizaciones/**
 
-            - id: activity-api
+            - id: llamada-api
               uri: http://localhost:8084
               predicates:
-                - Path=/actividades/**
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins:
-              - "http://localhost:4200"
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS
-            allowedHeaders: "*"
-            allowCredentials: true
+                - Path=/llamadas/**
+              filters:
+                - RewritePath=/llamadas/?(?<rest>.*), /services/llamadas/${rest}
 
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+           '[/**]':
+             allowedOrigins:
+               - "http://localhost:4200"
+             allowedMethods:
+               - GET
+               - POST
+               - PUT
+               - DELETE
+               - PATCH
+               - OPTIONS
+             allowedHeaders:
+               - Authorization
+               - Content-Type
+               - X-User-Id
+               - SOAPAction
+               - Accept
+               - Origin
+             allowCredentials: true
+             maxAge: 3600
 
 jwt:
   secret: 6f2c9a1d8b7e4c3f9a0d1e2c3b4a5f6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b
@@ -51,7 +61,7 @@ jwt:
 eureka:
   client:
     service-url:
-      defaultZone: http://eureka-discovery-server:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/
 
 management:
   endpoints:
@@ -64,5 +74,5 @@ management:
 
 logging:
   level:
-    org.springframework.cloud.gateway: TRACE
-    org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: DEBUG
+    org.springframework.cloud.gateway: INFO
+    org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: INFO
