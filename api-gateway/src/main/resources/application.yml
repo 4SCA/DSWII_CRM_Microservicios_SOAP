@@ -1,78 +1,82 @@
-server:
-  port: 8080
+  server:
+    port: 8080
 
-spring:
-  application:
-    name: api-gateway
+  spring:
+    application:
+      name: api-gateway
 
-  cloud:
-    gateway:
-      server:
-        webflux:
-          routes:
-            - id: auth-service
-              uri: http://localhost:8081
-              predicates:
-                - Path=/auth/**
+    cloud:
+      gateway:
+        server:
+          webflux:
+            routes:
+              - id: auth-service
+                uri: http://localhost:8081
+                predicates:
+                  - Path=/auth/**
 
-            - id: clientes-api
-              uri: http://localhost:8082
-              predicates:
-                - Path=/clientes/**
+              - id: clientes-api
+                uri: http://localhost:8082
+                predicates:
+                  - Path=/clientes/**
+                filters:
+                  - RewritePath=/clientes/?(?<rest>.*), /services/clientes/${rest}
 
-            - id: cotizacion-api
-              uri: http://localhost:8083
-              predicates:
-                - Path=/cotizaciones/**
+              - id: cotizacion-api
+                uri: http://localhost:8083
+                predicates:
+                  - Path=/cotizaciones/**
+                filters:
+                  - RewritePath=/cotizaciones/?(?<rest>.*), /services/cotizaciones/${rest}
 
-            - id: llamada-api
-              uri: http://localhost:8084
-              predicates:
-                - Path=/llamadas/**
-              filters:
-                - RewritePath=/llamadas/?(?<rest>.*), /services/llamadas/${rest}
+              - id: llamada-api
+                uri: http://localhost:8084
+                predicates:
+                  - Path=/llamadas/**
+                filters:
+                  - RewritePath=/llamadas/?(?<rest>.*), /services/llamadas/${rest}
 
-      globalcors:
-        add-to-simple-url-handler-mapping: true
-        cors-configurations:
-           '[/**]':
-             allowedOrigins:
-               - "http://localhost:4200"
-             allowedMethods:
-               - GET
-               - POST
-               - PUT
-               - DELETE
-               - PATCH
-               - OPTIONS
-             allowedHeaders:
-               - Authorization
-               - Content-Type
-               - X-User-Id
-               - SOAPAction
-               - Accept
-               - Origin
-             allowCredentials: true
-             maxAge: 3600
+        globalcors:
+          add-to-simple-url-handler-mapping: true
+          cors-configurations:
+             '[/**]':
+               allowedOrigins:
+                 - "http://localhost:4200"
+               allowedMethods:
+                 - GET
+                 - POST
+                 - PUT
+                 - DELETE
+                 - PATCH
+                 - OPTIONS
+               allowedHeaders:
+                 - Authorization
+                 - Content-Type
+                 - X-User-Id
+                 - SOAPAction
+                 - Accept
+                 - Origin
+               allowCredentials: true
+               maxAge: 3600
 
-jwt:
-  secret: 6f2c9a1d8b7e4c3f9a0d1e2c3b4a5f6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b
+  jwt:
+    secret: 6f2c9a1d8b7e4c3f9a0d1e2c3b4a5f6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b
 
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
+  eureka:
+    client:
+      service-url:
+        defaultZone: http://localhost:8761/eureka/
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: gateway,health,info
-  endpoint:
-    gateway:
-      enabled: true
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: gateway,health,info
+    endpoint:
+      gateway:
+        enabled: true
 
-logging:
-  level:
-    org.springframework.cloud.gateway: INFO
-    org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: INFO
+  logging:
+    level:
+      org.springframework.cloud.gateway: INFO
+      org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: INFO
