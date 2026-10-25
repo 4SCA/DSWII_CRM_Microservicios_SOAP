@@ -1,0 +1,128 @@
+services:
+  mysql-clientes:
+    image: mysql:8
+    container_name: mysql-clientes
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: clientes_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_clientes_data:/var/lib/mysql
+    networks:
+      - crm-network
+
+  mysql-llamada:
+    image: mysql:8
+    container_name: mysql-llamada
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: llamada_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_llamada_data:/var/lib/mysql
+    networks:
+      - crm-network
+
+  mysql-cotizaciones:
+    image: mysql:8
+    container_name: mysql-cotizaciones
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: cotizaciones_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3309:3306"
+    volumes:
+      - mysql_cotizaciones_data:/var/lib/mysql
+    networks:
+      - crm-network
+
+  mysql-auth:
+    image: mysql:8
+    container_name: mysql-auth
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: auth_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3310:3306"
+    volumes:
+      - mysql_auth_data:/var/lib/mysql
+    networks:
+      - crm-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.1
+    container_name: crm-zookeeper
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    volumes:
+      - zookeeper_data:/var/lib/zookeeper/data
+      - zookeeper_log:/var/lib/zookeeper/log
+    networks:
+      - crm-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: crm-kafka
+    restart: unless-stopped
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    networks:
+      - crm-network
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: crm-kafka-ui
+    restart: unless-stopped
+    depends_on:
+      - kafka
+    ports:
+      - "8085:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: crm-local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+    networks:
+      - crm-network
+
+networks:
+  crm-network:
+    name: crm-network
+    driver: bridge
+
+volumes:
+  mysql_clientes_data:
+  mysql_llamada_data:
+  mysql_cotizaciones_data:
+  mysql_auth_data:
+  zookeeper_data:
+  zookeeper_log:
+  kafka_data:
