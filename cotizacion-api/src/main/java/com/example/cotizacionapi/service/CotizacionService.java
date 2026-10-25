@@ -2,6 +2,8 @@ package com.example.cotizacionapi.service;
 
 import com.example.cotizacionapi.dto.ClienteDto;
 import com.example.cotizacionapi.feign.ClienteFeignClient;
+import com.example.cotizacionapi.kafka.event.CotizacionCreadaEvent;
+import com.example.cotizacionapi.kafka.producer.CotizacionKafkaProducer;
 import com.example.cotizacionapi.model.Cotizacion;
 import com.example.cotizacionapi.repository.CotizacionRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,11 +16,12 @@ public class CotizacionService {
 
     private final CotizacionRepository repository;
     private final ClienteFeignClient feign;
+    private final CotizacionKafkaProducer kafkaProducer;
 
-    public CotizacionService(CotizacionRepository repository,
-                             ClienteFeignClient feign) {
+    public CotizacionService(CotizacionRepository repository, ClienteFeignClient feign, CotizacionKafkaProducer kafkaProducer) {
         this.repository = repository;
         this.feign = feign;
+        this.kafkaProducer = kafkaProducer;
     }
 
     public List<Cotizacion> listar() {
@@ -40,7 +43,21 @@ public class CotizacionService {
 
         cotizacion.setIdUsuario(userId);
 
-        return repository.save(cotizacion);
+        Cotizacion guardada = repository.save(cotizacion);
+
+        CotizacionCreadaEvent evento = new CotizacionCreadaEvent(
+                guardada.getId(),
+                guardada.getIdCliente(),
+                guardada.getIdUsuario(),
+                guardada.getDescripcion(),
+                guardada.getMontoEstimado(),
+                guardada.getEstado(),
+                guardada.getFecha()
+        );
+
+        kafkaProducer.publicar(evento);
+
+        return guardada;
     }
 
     public Cotizacion actualizar(Long id, Cotizacion data) {
